@@ -7,7 +7,7 @@ services:
     plan: free
     rootDir: backend
     healthCheckPath: /api/health
-    buildCommand: npm ci && npm run build
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run migrate && npm run start
     envVars:
       - key: NODE_ENV
