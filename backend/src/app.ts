@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
+import { isAllowedOrigin } from './utils/origin';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/logger';
 import authRoutes from './routes/authRoutes';
@@ -17,16 +18,6 @@ const app = express();
 
 if (env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
-}
-
-function isLocalOrigin(origin: string | undefined): boolean {
-  if (!origin) return false;
-  try {
-    const host = new URL(origin).hostname;
-    return host === 'localhost' || host === '127.0.0.1' || host === '::1';
-  } catch {
-    return false;
-  }
 }
 
 app.use(
@@ -52,9 +43,9 @@ app.use(
 );
 app.use(
   cors({
-    origin: env.NODE_ENV === 'production' ? env.CORS_ORIGIN : (origin, callback) => {
-      if (!origin || isLocalOrigin(origin)) return callback(null, true);
-      return callback(null, origin === env.CORS_ORIGIN);
+    origin: (origin, callback) => {
+      if (!origin || isAllowedOrigin(origin)) return callback(null, true);
+      return callback(null, false);
     },
     credentials: true,
   })

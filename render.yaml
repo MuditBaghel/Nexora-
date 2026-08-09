@@ -25,9 +25,9 @@ services:
         value: 15m
       - key: REFRESH_TOKEN_EXPIRES_IN
         value: 7d
-      # Replace with your real frontend origin (Vercel domain):
+      # Comma-separated allowed frontend origins:
       - key: CORS_ORIGIN
-        value: https://nexora.dev
+        value: https://nexora.dev,https://www.nexora.dev,https://nexora-virid-kappa.vercel.app
       # strict (default) | lax | none
       # Use "none" when the API and frontend are on different registrable domains
       # (free Render API at *.onrender.com + Vercel frontend at nexora.dev):
