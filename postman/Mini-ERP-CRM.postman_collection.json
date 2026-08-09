@@ -1,0 +1,365 @@
+{
+  "info": {
+    "name": "Mini ERP + CRM API",
+    "description": "Operations portal API for wholesale/distribution company.\n\n## Authentication\n1. Run **Auth > Login** with test credentials.\n2. The collection automatically saves `token` from the login response.\n3. All protected requests use `Authorization: Bearer {{token}}`.\n\n## Test Credentials\n- admin@example.com / Password123!\n- sales@example.com / Password123!\n- warehouse@example.com / Password123!\n- accounts@example.com / Password123!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:4000/api" },
+    { "key": "token", "value": "" },
+    { "key": "customer_id", "value": "" },
+    { "key": "product_id", "value": "" },
+    { "key": "challan_id", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sales@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/customers?page=1&limit=10&search=&customer_type=&status=",
+              "host": ["{{base_url}}"],
+              "path": ["customers"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "" },
+                { "key": "customer_type", "value": "" },
+                { "key": "status", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('customer_id', pm.response.json().data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_name\": \"Test Customer\",\n  \"mobile\": \"9876543210\",\n  \"email\": \"test@example.com\",\n  \"business_name\": \"Test Business\",\n  \"customer_type\": \"WHOLESALE\",\n  \"address\": \"123 Test Street\",\n  \"status\": \"ACTIVE\",\n  \"notes\": \"Created via Postman\"\n}"
+            },
+            "url": "{{base_url}}/customers"
+          }
+        },
+        {
+          "name": "Get Customer",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/customers/{{customer_id}}"
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\",\n  \"notes\": \"Updated via Postman\"\n}"
+            },
+            "url": "{{base_url}}/customers/{{customer_id}}"
+          }
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/customers/{{customer_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Follow-ups",
+      "item": [
+        {
+          "name": "List Follow-ups",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/customers/{{customer_id}}/followups"
+          }
+        },
+        {
+          "name": "Add Follow-up",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Called customer, will follow up next week\",\n  \"follow_up_date\": \"2026-08-20\"\n}"
+            },
+            "url": "{{base_url}}/customers/{{customer_id}}/followups"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products?page=1&limit=10&search=&category=&low_stock=",
+              "host": ["{{base_url}}"],
+              "path": ["products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "" },
+                { "key": "category", "value": "" },
+                { "key": "low_stock", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('product_id', pm.response.json().data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_name\": \"Test Product\",\n  \"sku\": \"TEST-SKU-001\",\n  \"category\": \"Electronics\",\n  \"unit_price\": 999.00,\n  \"current_stock\": 100,\n  \"minimum_stock\": 10,\n  \"warehouse_location\": \"A-01-01\"\n}"
+            },
+            "url": "{{base_url}}/products"
+          }
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/products/{{product_id}}"
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unit_price\": 1099.00,\n  \"minimum_stock\": 15\n}"
+            },
+            "url": "{{base_url}}/products/{{product_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock",
+      "item": [
+        {
+          "name": "List Stock Movements",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/stock/movements?page=1&limit=10&product_id=&movement_type=&date_from=&date_to=",
+              "host": ["{{base_url}}"],
+              "path": ["stock", "movements"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "product_id", "value": "" },
+                { "key": "movement_type", "value": "" },
+                { "key": "date_from", "value": "" },
+                { "key": "date_to", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stock IN",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"quantity\": 50,\n  \"movement_type\": \"IN\",\n  \"reason\": \"Purchase order received\"\n}"
+            },
+            "url": "{{base_url}}/stock/movements"
+          }
+        },
+        {
+          "name": "Stock OUT",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"{{product_id}}\",\n  \"quantity\": 5,\n  \"movement_type\": \"OUT\",\n  \"reason\": \"Damaged goods write-off\"\n}"
+            },
+            "url": "{{base_url}}/stock/movements"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Challans",
+      "item": [
+        {
+          "name": "List Challans",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/challans?page=1&limit=10&search=&status=",
+              "host": ["{{base_url}}"],
+              "path": ["challans"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "" },
+                { "key": "status", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Draft Challan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('challan_id', pm.response.json().data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"{{customer_id}}\",\n  \"items\": [\n    { \"product_id\": \"{{product_id}}\", \"quantity\": 2 }\n  ]\n}"
+            },
+            "url": "{{base_url}}/challans"
+          }
+        },
+        {
+          "name": "Get Challan",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/challans/{{challan_id}}"
+          }
+        },
+        {
+          "name": "Confirm Challan",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/challans/{{challan_id}}/confirm"
+          }
+        },
+        {
+          "name": "Cancel Challan",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/challans/{{challan_id}}/cancel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/dashboard/stats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+# Render Blueprint — deploys the Express API from the backend/ directory.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: nexora-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    healthCheckPath: /api/health
+    preDeployCommand: npm run migrate
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Set DATABASE_URL in the Render dashboard (Neon external connection string).
+      # Do NOT commit the real value — keep it a manual secret:
+      - key: DATABASE_URL
+        sync: false
+      # Auto-generate a strong JWT secret on first deploy:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: REFRESH_TOKEN_EXPIRES_IN
+        value: 7d
+      # Replace with your real frontend origin (Vercel domain):
+      - key: CORS_ORIGIN
+        value: https://nexora.dev
+      # strict (default) | lax | none
+      # Use "none" when the API and frontend are on different registrable domains
+      # (free Render API at *.onrender.com + Vercel frontend at nexora.dev):
+      - key: COOKIE_SAME_SITE
+        value: none
