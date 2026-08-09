@@ -7,9 +7,8 @@ services:
     plan: free
     rootDir: backend
     healthCheckPath: /api/health
-    preDeployCommand: npm run migrate
     buildCommand: npm ci && npm run build
-    startCommand: npm run start
+    startCommand: npm run migrate && npm run start
     envVars:
       - key: NODE_ENV
         value: production

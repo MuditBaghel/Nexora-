@@ -35,7 +35,7 @@ If push prompts for credentials: install GitHub CLI (`winget install GitHub.cli`
 
 Option A — **Blueprint (easiest):**
 1. https://render.com/new → **Blueprint** → connect the `MuditBaghel/Nexora` repo → follow the wizard.
-2. It reads `render.yaml` (service `nexora-api`, runs migrations in `preDeployCommand`).
+2. It reads `render.yaml` (service `nexora-api`; migrations run automatically on every boot via `startCommand`).
 3. In the service's **Environment** tab, set `DATABASE_URL` to the Neon string from step 2. (`JWT_SECRET` is auto-generated; `CORS_ORIGIN=https://nexora.dev`, `COOKIE_SAME_SITE=none` are preset.)
 
 Option B — **Dashboard (manual):**
