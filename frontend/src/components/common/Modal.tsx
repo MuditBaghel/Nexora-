@@ -17,7 +17,9 @@ export default function Modal({ open, title, onClose, children, size = 'md' }: P
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handleKey);
-    closeRef.current?.focus();
+    const modal = document.querySelector('.modal');
+    const firstInput = modal?.querySelector<HTMLInputElement>('input, select, textarea, [tabindex="0"]');
+    firstInput?.focus();
     return () => document.removeEventListener('keydown', handleKey);
   }, [open, onClose]);
 
